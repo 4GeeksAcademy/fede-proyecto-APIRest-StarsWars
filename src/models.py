@@ -4,12 +4,13 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 db = SQLAlchemy()
 
+
 class User(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
-    email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+    email: Mapped[str] = mapped_column(
+        String(120), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
-
 
     def serialize(self):
         return {
@@ -17,6 +18,7 @@ class User(db.Model):
             "email": self.email,
             # do not serialize the password, its a security breach
         }
+
 
 class People(db.Model):
     __tablename__ = 'people'
@@ -32,6 +34,21 @@ class People(db.Model):
     homeworld: Mapped[str] = mapped_column(String(40), nullable=False)
     url: Mapped[str] = mapped_column(String(100), nullable=False)
 
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "birth_year": self.birth_year,
+            "eye_color": self.eye_color,
+            "gender": self.gender,
+            "hair_color": self.hair_color,
+            "height": self.height,
+            "mass": self.mass,
+            "skin_color": self.skin_color,
+            "homeworld": self.homeworld,
+
+        }
+
 
 class Planets(db.Model):
     __tablename__ = 'planets'
@@ -45,7 +62,22 @@ class Planets(db.Model):
     climate: Mapped[str] = mapped_column(String(120), nullable=False)
     terrain: Mapped[str] = mapped_column(String(120), nullable=False)
     surface_water: Mapped[str] = mapped_column(String(120), nullable=False)
-    
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "diameter": self.diameter,
+            "rotation_period": self.rotation_period,
+            "orbital_period": self.orbital_period,
+            "gravity": self.gravity,
+            "population": self.population,
+            "climate": self.climate,
+            "terrain": self.terrain,
+            "surface_water": self.surface_water,
+
+        }
+
 
 class Films(db.Model):
     __tablename__ = 'films'
@@ -55,14 +87,15 @@ class Films(db.Model):
     opening_crowl: Mapped[str] = mapped_column(String(120), nullable=False)
     director: Mapped[str] = mapped_column(String(120), nullable=False)
     producer: Mapped[str] = mapped_column(String(120), nullable=False)
-    
-    
 
 
 class Favorites(db.Model):
     __tablename__ = 'favorites'
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey('user.id'), nullable=False)
-    people_id: Mapped[int] = mapped_column(ForeignKey('people.id'), nullable=True)
-    planets_id: Mapped[int] = mapped_column(ForeignKey('planets.id'), nullable=True)
-    films_id: Mapped[int] = mapped_column(ForeignKey('films.id'), nullable=True)
+    people_id: Mapped[int] = mapped_column(
+        ForeignKey('people.id'), nullable=True)
+    planets_id: Mapped[int] = mapped_column(
+        ForeignKey('planets.id'), nullable=True)
+    films_id: Mapped[int] = mapped_column(
+        ForeignKey('films.id'), nullable=True)
