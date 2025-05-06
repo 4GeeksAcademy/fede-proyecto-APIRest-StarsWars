@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, People, Planets
+from models import db, User, People, Planets, Favorites
 # from models import Person
 
 app = Flask(__name__)
@@ -60,7 +60,7 @@ def create_user():
     )
     db.session.add(user)
     db.session.commit()
-    return jsonify(user.serialize()), 201
+    return jsonify(user.serialize()), 200
 
 
 @app.route('/people', methods=['GET'])
@@ -96,7 +96,7 @@ def get_single_planet(planet_id):
     return jsonify(planet.serialize()), 200
 
 
-@app.route('/planets/<int:planet_id>', methods=['DELETE'])
+@app.route('/planet/<int:planet_id>', methods=['DELETE'])
 def delete_planet(planet_id):
     planet = Planets.query.get(planet_id)
     db.session.delete(planet)
@@ -113,18 +113,44 @@ def create_people():
         name=body['name'],
         birth_year=body['birth_year'],
         eye_color=body['eye_color'],
-        gender=body['gender'],
-        hair_color=body['hair_color'],
-        height=body['height'],
-        mass=body['mass'],
-        skin_color=body['skin_color'],
-        homeworld=body['homeworld'],
-        url=body['url']
     )
 
     db.session.add(people)
     db.session.commit()
     return jsonify(people.serialize()), 201
+
+
+@app.route('/favorites/planet/<int:planet_id>', methods=['POST'])
+def get_favorite_planet_by_id(planet_id):
+    body = request.get_json()
+    existing_favorite = Favorites.query.filter_by(
+        user_id=body['user_id'], planets_id=planet_id).first()
+    if existing_favorite:
+        return jsonify({'msg': 'el planeta ya existe en favoritos'}), 400
+    new_favorites = Favorites(user_id=body['user_id'], planets_id=planet_id)
+    db.session.add(new_favorites)
+    db.session.commit()
+    return jsonify(new_favorites.serialize()), 201
+
+
+@app.route('/favorites/people/<int:people_id>', methods=['POST'])
+def get_favorite_people_by_id(people_id):
+    body = request.get_json()
+    existing_favorite = Favorites.query.filter_by(
+        user_id=body['user_id'], people_id=people_id).first()
+    if existing_favorite:
+        return jsonify({'msg': 'el personaje ya existe en favoritos'}), 400
+    new_favorites = Favorites(user_id=body['user_id'], people_id=people_id)
+    db.session.add(new_favorites)
+    db.session.commit()
+    return jsonify(new_favorites.serialize()), 201
+
+
+@app.route('/users/favorites', methods=['GET'])
+def get_user_favorites():
+    body = request.get_json()
+    favorites = Favorites.query.filter_by(user_id=body['user_id']).all()
+    return jsonify([fav.serialize() for fav in favorites]), 200
 
 
 # this only runs if `$ python src/app.py` is executed

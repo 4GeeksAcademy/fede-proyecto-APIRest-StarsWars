@@ -26,13 +26,6 @@ class People(db.Model):
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     birth_year: Mapped[str] = mapped_column(String(120), nullable=False)
     eye_color: Mapped[str] = mapped_column(String(120), nullable=False)
-    gender: Mapped[str] = mapped_column(String(120), nullable=False)
-    hair_color: Mapped[str] = mapped_column(String(20), nullable=False)
-    height: Mapped[str] = mapped_column(String(20), nullable=False)
-    mass: Mapped[str] = mapped_column(String(20), nullable=False)
-    skin_color: Mapped[str] = mapped_column(String(20), nullable=False)
-    homeworld: Mapped[str] = mapped_column(String(40), nullable=False)
-    url: Mapped[str] = mapped_column(String(100), nullable=False)
 
     def serialize(self):
         return {
@@ -40,12 +33,6 @@ class People(db.Model):
             "name": self.name,
             "birth_year": self.birth_year,
             "eye_color": self.eye_color,
-            "gender": self.gender,
-            "hair_color": self.hair_color,
-            "height": self.height,
-            "mass": self.mass,
-            "skin_color": self.skin_color,
-            "homeworld": self.homeworld,
 
         }
 
@@ -56,12 +43,6 @@ class Planets(db.Model):
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     diameter: Mapped[str] = mapped_column(String(120), nullable=False)
     rotation_period: Mapped[str] = mapped_column(String(120), nullable=False)
-    orbital_period: Mapped[str] = mapped_column(String(120), nullable=False)
-    gravity: Mapped[str] = mapped_column(String(120), nullable=False)
-    population: Mapped[str] = mapped_column(String(120), nullable=False)
-    climate: Mapped[str] = mapped_column(String(120), nullable=False)
-    terrain: Mapped[str] = mapped_column(String(120), nullable=False)
-    surface_water: Mapped[str] = mapped_column(String(120), nullable=False)
 
     def serialize(self):
         return {
@@ -69,12 +50,6 @@ class Planets(db.Model):
             "name": self.name,
             "diameter": self.diameter,
             "rotation_period": self.rotation_period,
-            "orbital_period": self.orbital_period,
-            "gravity": self.gravity,
-            "population": self.population,
-            "climate": self.climate,
-            "terrain": self.terrain,
-            "surface_water": self.surface_water,
 
         }
 
@@ -99,3 +74,12 @@ class Favorites(db.Model):
         ForeignKey('planets.id'), nullable=True)
     films_id: Mapped[int] = mapped_column(
         ForeignKey('films.id'), nullable=True)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "people_id": self.people_id,
+            "planets_id": self.planets_id,
+
+        }
